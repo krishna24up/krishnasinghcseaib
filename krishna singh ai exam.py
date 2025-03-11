@@ -1,0 +1,89 @@
+# Tic-Tac-Toe Game  (1 Player vs Computer)
+
+import sys
+import random
+
+def print_board(board):
+    """Function to print the Tic-Tac-Toe board in a formatted way."""
+    for row in board:
+        print(" | ".join(row))
+        print("-" * 9)
+
+def check_winner(board, player):
+    """Function to check if a player has won the game."""
+    # Check rows and columns
+    for i in range(3):
+        if all(board[i][j] == player for j in range(3)) or all(board[j][i] == player for j in range(3)):
+            return True
+    
+    # Check diagonals
+    if all(board[i][i] == player for i in range(3)) or all(board[i][2 - i] == player for i in range(3)):
+        return True
+    
+    return False
+
+def is_full(board):
+    """Function to check if the board is full, resulting in a draw."""
+    return all(board[i][j] != " " for i in range(3) for j in range(3))
+
+def get_valid_input(board):
+    """Function to get valid input from the player."""
+    while True:
+        try:
+            row, col = map(int, input("Enter row and column (0-2) separated by space: ").split())
+            if 0 <= row < 3 and 0 <= col < 3:
+                if board[row][col] == " ":
+                    return row, col
+                else:
+                    print("Cell is already occupied. Try again.")
+            else:
+                print("Invalid input. Please enter numbers between 0 and 2.")
+        except ValueError:
+            print("Invalid input. Enter two numbers separated by space.")
+
+def get_computer_move(board):
+    """Function for the computer to make a move by choosing a random empty cell."""
+    empty_cells = [(i, j) for i in range(3) for j in range(3) if board[i][j] == " "]
+    return random.choice(empty_cells)
+
+def tic_tac_toe():
+    """Main function to run the Tic-Tac-Toe game with one player vs computer."""
+    board = [[" " for _ in range(3)] for _ in range(3)]
+    player_symbol = "X"
+    computer_symbol = "O"
+    turn = 0
+    
+    while True:
+        print_board(board)
+        if turn % 2 == 0:
+            print("Player's turn")
+            row, col = get_valid_input(board)
+            board[row][col] = player_symbol
+        else:
+            print("Computer's turn")
+            row, col = get_computer_move(board)
+            board[row][col] = computer_symbol
+        
+        # Check for a winner or draw
+        if check_winner(board, player_symbol):
+            print_board(board)
+            print("Player wins!")
+            break
+        if check_winner(board, computer_symbol):
+            print_board(board)
+            print("Computer wins!")
+            break
+        if is_full(board):
+            print_board(board)
+            print("It's a draw!")
+            break
+        
+        turn += 1
+
+# Run the game
+if __name__ == "__main__":
+    try:
+        tic_tac_toe()
+    except KeyboardInterrupt:
+        print("\nGame interrupted. Exiting...")
+        sys.exit(0)
